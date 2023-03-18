@@ -7,6 +7,13 @@ const receitasP = document.querySelector('#din-positivo')
 const despesasP = document.querySelector('#din-negativo')
 const transacoesUl = document.querySelector('#transacoes')
 
+let transacoesSalvas = JSON.parse(localStorage.getItem('transacoes'))
+if (transacoesSalvas == null) {
+    transacoesSalvas = []
+} else {
+    
+}
+
 form.addEventListener('submit', (event) => {
     event.preventDefault()
 
@@ -25,6 +32,9 @@ form.addEventListener('submit', (event) => {
         descricao: descrTransacao,
         valor: parseFloat(valorTransacao),
     }
+
+    transacoesSalvas.push(transacao)
+    localStorage.setItem('transacoes', JSON.stringify(transacoesSalvas))
 
     somaAoSaldo(transacao)
     somaReceitaOuDespesa(transacao)
@@ -59,3 +69,19 @@ function addTransacaoAoDOM(transacao) {
     li.innerHTML = `${transacao.descricao} <span>${operador}R$${Math.abs(transacao.valor)}</span>`
     transacoesUl.append(li)
 }
+
+function carregarDados() {
+    transacoesUl.innerHTML = ''
+    balancoH1.innerHTML = ''
+    receitasP.innerHTML = '+ R$0.00'
+    despesasP.innerHTML = '- R$0.00'
+
+    for (let i = 0; i < transacoesSalvas.length; i++) {
+        const transacao = transacoesSalvas[i]
+        somaAoSaldo(transacao)
+        somaReceitaOuDespesa(transacao)
+        addTransacaoAoDOM(transacao)
+    }
+}
+
+carregarDados()
