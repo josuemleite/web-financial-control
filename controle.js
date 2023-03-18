@@ -5,6 +5,7 @@ const valorTransacaoInput = document.querySelector('#montante')
 const balancoH1 = document.querySelector('#balanco')
 const receitasP = document.querySelector('#din-positivo')
 const despesasP = document.querySelector('#din-negativo')
+const transacoesUl = document.querySelector('#transacoes')
 
 form.addEventListener('submit', (event) => {
     event.preventDefault()
@@ -26,12 +27,11 @@ form.addEventListener('submit', (event) => {
     }
 
     somaAoSaldo(transacao)
+    somaReceitaOuDespesa(transacao)
+    addTransacaoAoDOM(transacao)
 
     descrTransacaoInput.value = ''
     valorTransacaoInput.value = ''
-
-    somaReceitaOuDespesa(transacao)
-
 })
 
 function somaAoSaldo(transacao) {
@@ -49,4 +49,13 @@ function somaReceitaOuDespesa(transacao) {
     valorAtual = parseFloat(valorAtual)
     valorAtual += Math.abs(transacao.valor)
     elemento.innerHTML = `${substituir}${valorAtual}`
+}
+
+function addTransacaoAoDOM(transacao) {
+    const operador = transacao.valor > 0 ? '' : '-'
+    const classe = transacao.valor > 0 ? 'positivo' : 'negativo'
+    const li = document.createElement('li')
+    li.classList.add(classe)
+    li.innerHTML = `${transacao.descricao} <span>${operador}R$${Math.abs(transacao.valor)}</span>`
+    transacoesUl.append(li)
 }
