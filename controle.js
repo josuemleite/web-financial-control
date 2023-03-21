@@ -6,8 +6,9 @@ const balancoH1 = document.querySelector('#balanco')
 const receitasP = document.querySelector('#din-positivo')
 const despesasP = document.querySelector('#din-negativo')
 const transacoesUl = document.querySelector('#transacoes')
+const localStorageKey = 'transacoes'
 
-let transacoesSalvas = JSON.parse(localStorage.getItem('transacoes'))
+let transacoesSalvas = JSON.parse(localStorage.getItem(localStorageKey))
 if (transacoesSalvas == null) {
     transacoesSalvas = []
 } else {
@@ -30,11 +31,11 @@ form.addEventListener('submit', (event) => {
     const transacao = {
         id: idTransacao,
         descricao: descrTransacao,
-        valor: parseFloat(valorTransacao),
+        valor: parseFloat(valorTransacao)
     }
 
     transacoesSalvas.push(transacao)
-    localStorage.setItem('transacoes', JSON.stringify(transacoesSalvas))
+    localStorage.setItem(localStorageKey, JSON.stringify(transacoesSalvas))
 
     somaAoSaldo(transacao)
     somaReceitaOuDespesa(transacao)
@@ -66,13 +67,13 @@ function addTransacaoAoDOM(transacao) {
     const classe = transacao.valor > 0 ? 'positivo' : 'negativo'
     const li = document.createElement('li')
     li.classList.add(classe)
-    li.innerHTML = `${transacao.descricao} <span>${operador}R$${Math.abs(transacao.valor)}</span>`
+    li.innerHTML = `${transacao.descricao} <span>${operador}R$${Math.abs(transacao.valor)}</span><button class="delete-btn" onClick="deletaTransacao(${transacao.id})">X</button>`
     transacoesUl.append(li)
 }
 
 function carregarDados() {
     transacoesUl.innerHTML = ''
-    balancoH1.innerHTML = ''
+    balancoH1.innerHTML = 'R$0.00'
     receitasP.innerHTML = '+ R$0.00'
     despesasP.innerHTML = '- R$0.00'
 
@@ -85,3 +86,13 @@ function carregarDados() {
 }
 
 carregarDados()
+
+function deletaTransacao(idTransacao) {
+    const indiceTransacao = transacoesSalvas.findIndex((t) => t.id === idTransacao)
+
+    transacoesSalvas.splice(indiceTransacao, 1)
+
+    carregarDados()
+
+    localStorage.setItem(localStorageKey, JSON.stringify(transacoesSalvas))
+}
